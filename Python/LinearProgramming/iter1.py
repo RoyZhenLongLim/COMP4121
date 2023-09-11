@@ -5,9 +5,12 @@ class LP1:
     data = {}
 
     def __init__(self):
-        # TODO: Create function that generates the constraints automatically
-        # TODO: Include room availability
-        # TODO: Include scheduling for multiple days
+        """
+            init produces a schedule (1 day, 4 sessions, 4 events of 2 hours in length and schedules them)
+            Constraints should be done automatically
+            Room availability should be considered
+            Scheduling for multiple days should also be included
+        """
         events = 4
         days = 1
         sessions = 4
@@ -68,19 +71,11 @@ class LP1:
             for j in range(self.data["num_vars"]):
                 constraint.SetCoefficient(x[j], self.data["constraint_coeffs"][i][j])
         print("Number of constraints =", solver.NumConstraints())
-        # In Python, you can also set the constraints as follows.
-        # for i in range(data['num_constraints']):
-        #  constraint_expr = \
-        # [data['constraint_coeffs'][i][j] * x[j] for j in range(data['num_vars'])]
-        #  solver.Add(sum(constraint_expr) <= data['bounds'][i])
 
         objective = solver.Objective()
         for j in range(self.data["num_vars"]):
             objective.SetCoefficient(x[j], self.data["obj_coeffs"][j])
         objective.SetMaximization()
-        # In Python, you can also set the objective as follows.
-        # obj_expr = [data['obj_coeffs'][j] * x[j] for j in range(data['num_vars'])]
-        # solver.Maximize(solver.Sum(obj_expr))
 
         status = solver.Solve()
 
@@ -94,6 +89,7 @@ class LP1:
             print("Problem solved in %d branch-and-bound nodes" % solver.nodes())
         else:
             print("The problem does not have an optimal solution.")
+
 
 def main():
     lp_iter1 = LP1()
