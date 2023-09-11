@@ -94,3 +94,11 @@ class LP1:
             print("Problem solved in %d branch-and-bound nodes" % solver.nodes())
         else:
             print("The problem does not have an optimal solution.")
+
+def main():
+    lp_iter1 = LP1()
+    lp_iter1.solve()
+
+
+if __name__ == "__main__":
+    main()
