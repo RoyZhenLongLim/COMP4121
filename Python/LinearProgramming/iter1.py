@@ -1,7 +1,7 @@
 from ortools.linear_solver import pywraplp
 
 
-class LP:
+class LP1:
     data = {}
 
     def __init__(self):
