@@ -4,4 +4,6 @@ This repo is dedicated to Roy Lim z5310629's work for COMP4121 Advanced Algorith
 
 ## TODO
 
-- [ ] Measure performance of algorithms using `measureTime()` 
+- [ ] Measure performance of algorithm
+- [ ] Create a usable API call
+- [ ] Create a interactive frontend interface
