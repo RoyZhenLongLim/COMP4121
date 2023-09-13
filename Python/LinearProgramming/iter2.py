@@ -1,27 +1,13 @@
 from ortools.linear_solver import pywraplp
-from enum import Enum
 
 from Python.LinearProgramming.iter2_helper.course import Event, Course
-
-
-class TimeBlockMapping(Enum):
-    From9amTo11am = 0
-    From11amTo1pm = 1
-    From2pmTo4pm = 2
-    FROM4pmTo6pm = 3
-
-
-class DayMapping(Enum):
-    MONDAY = 1
-    TUESDAY = 2
-    WEDNESDAY = 3
-    THURSDAY = 4
-    FRIDAY = 5
 
 
 class LP2:
     days = 1
     time_blocks = 4
+    counter = 0
+    rooms = ["A", "B", "C"]
 
     # Defaults for data
     data = {
@@ -31,7 +17,7 @@ class LP2:
             [4, 7, 3, 8, 5],
             [5, 13, 16, 3, -7],
         ],
-        "bounds": [250, 285, 211, 315],
+        "bounds": [20, 20, 20, 20],
         "obj_coeffs": [7, 8, 2, 9, 6],
         "num_vars": 5,
         "num_constraints": 4
@@ -50,7 +36,11 @@ class LP2:
                        Event(["C"], "OTH")
                    ])
         ]
-        # self.data['num_vars'] = sum(course.get_size(self.days, self.time_blocks) for course in courses)
+        self.data["num_vars"] = sum(course.get_size(self.days, self.time_blocks, len(self.rooms)) for course in courses)
+        print(self.data["num_vars"])
+
+        # TODO: Ensure that each room at each time slot on each day can only be booked once
+        # TODO: Ensure that for each course, there are no overlapping events
 
     def solve(self):
         # Creating the solver
@@ -62,6 +52,8 @@ class LP2:
         for j in range(self.data["num_vars"]):
             # TODO: Make this use proper names, i.e. PHYS2111 Lecture at Time X in Room Y
             x[j] = solver.BoolVar('%d' % j)
+            # Include as a phantom variable (always set to 0)
+            # x[j] = solver.IntVar(0, 0, '%d' % j)
 
         # Create constraints
         for i in range(self.data['num_constraints']):
@@ -90,7 +82,7 @@ class LP2:
 
 def main():
     algorithm = LP2()
-    algorithm.solve()
+    # algorithm.solve()
     return 0
 
 
