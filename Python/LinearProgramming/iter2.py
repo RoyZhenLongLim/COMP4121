@@ -1,52 +1,95 @@
 from ortools.linear_solver import pywraplp
+from enum import Enum
+
+from Python.LinearProgramming.iter2_helper.course import Event, Course
+
+
+class TimeBlockMapping(Enum):
+    From9amTo11am = 0
+    From11amTo1pm = 1
+    From2pmTo4pm = 2
+    FROM4pmTo6pm = 3
+
+
+class DayMapping(Enum):
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
 
 
 class LP2:
-    days = 2
+    days = 1
+    time_blocks = 4
+
+    # Defaults for data
+    data = {
+        "constraint_coeffs": [
+            [5, 7, 9, 2, 1],
+            [18, 4, -9, 10, 12],
+            [4, 7, 3, 8, 5],
+            [5, 13, 16, 3, -7],
+        ],
+        "bounds": [250, 285, 211, 315],
+        "obj_coeffs": [7, 8, 2, 9, 6],
+        "num_vars": 5,
+        "num_constraints": 4
+    }
 
     def __init__(self):
-        pass
+        """
+        Initialise data to be solved
+        """
+        courses = [
+            Course("PHYS1111",
+                   [
+                       Event(["A"], "LEC"),
+                       Event(["A"], "LEC"),
+                       Event(["B"], "LAB"),
+                       Event(["C"], "OTH")
+                   ])
+        ]
+        # self.data['num_vars'] = sum(course.get_size(self.days, self.time_blocks) for course in courses)
 
     def solve(self):
-        solver = pywraplp.Solver.CreateSolver("GLOP")
+        # Creating the solver
+        solver = pywraplp.Solver.CreateSolver("SCIP")
         if not solver:
             return
-        x = solver.BoolVar('x')
-        y = solver.BoolVar('y')
 
-        print("Number of variables =", solver.NumVariables())
+        x = {}
+        for j in range(self.data["num_vars"]):
+            # TODO: Make this use proper names, i.e. PHYS2111 Lecture at Time X in Room Y
+            x[j] = solver.BoolVar('%d' % j)
 
-        # Constraint 0: x + 2y <= 14.
-        solver.Add(x + 2 * y <= 14.0)
+        # Create constraints
+        for i in range(self.data['num_constraints']):
+            constraint_expr = \
+                [self.data['constraint_coeffs'][i][j] * x[j] for j in range(self.data['num_vars'])]
+            solver.Add(sum(constraint_expr) <= self.data['bounds'][i])
 
-        # Constraint 1: 3x - y >= 0.
-        solver.Add(3 * x - y >= 0.0)
+        # Defining objective function
+        obj_expr = [self.data['obj_coeffs'][j] * x[j] for j in range(self.data['num_vars'])]
+        solver.Maximize(solver.Sum(obj_expr))
 
-        # Constraint 2: x - y <= 2.
-        solver.Add(x - y <= 2.0)
-
-        print("Number of constraints =", solver.NumConstraints())
-
-        # Objective function: 3x + 4y.
-        solver.Maximize(3 * x + 4 * y)
-
+        # Solve and Output solution
         status = solver.Solve()
 
         if status == pywraplp.Solver.OPTIMAL:
-            print("Solution:")
             print("Objective value =", solver.Objective().Value())
-            print("x =", x.solution_value())
-            print("y =", y.solution_value())
+            for j in range(self.data["num_vars"]):
+                print(x[j].name(), " = ", x[j].solution_value())
+            print()
+            print("Problem solved in %f milliseconds" % solver.wall_time())
+            print("Problem solved in %d iterations" % solver.iterations())
+            print("Problem solved in %d branch-and-bound nodes" % solver.nodes())
         else:
             print("The problem does not have an optimal solution.")
-
-    def add_constraint(self):
-        pass
 
 
 def main():
     algorithm = LP2()
-    algorithm.add_constraint()
     algorithm.solve()
     return 0
 
