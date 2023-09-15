@@ -1,69 +1,123 @@
 from ortools.linear_solver import pywraplp
 
+from Python.LinearProgramming.iter3_helper.USCP_Params import USCP_Params
+
 
 class LP3:
     def __init__(self):
         pass
 
-    def create_data_model(self):
-        """Stores the data for the problem."""
-        data = {}
-        data["constraint_coeffs"] = [
-            [5, 7, 9, 2, 1],
-            [18, 4, -9, 10, 12],
-            [4, 7, 3, 8, 5],
-            [5, 13, 16, 3, -7],
-        ]
-        data["bounds"] = [250, 285, 211, 315]
-        data["obj_coeffs"] = [7, 8, 2, 9, 6]
-        data["num_vars"] = 5
-        data["num_constraints"] = 4
-        return data
+    def __compute_index(self, params: USCP_Params, day, time, room, event):
+        index = event * (params.days * params.time_blocks * params.rooms) + \
+                day * (params.time_blocks * params.rooms) + \
+                time * params.rooms + \
+                room
+        return index
+
+    def __generate_event_description(self, day, time, room, event):
+        day_map = {
+            0: 'Monday',
+            1: 'Tuesday',
+        }
+
+        time_map = {
+            0: 'Morning',
+            1: 'Afternoon'
+        }
+        string = f"Event {event} is in room {room} on {day_map[day]} {time_map[time]}"
+        return string
 
     def solve(self):
         # Default Params
         days = 2  # Day 0, 1
         time_blocks = 2  # Morning, Afternoon
         rooms = 2  # Room 0, 1
-        events = 2 # LEC, TUT
+        events = 5  # LEC, TUT
 
-        data = self.create_data_model()
+        data = {}
+        data['num_vars'] = events * days * time_blocks * rooms
+        data['obj_coeffs'] = [1] * data['num_vars']
+
         # Create the mip solver with the SCIP backend.
         solver = pywraplp.Solver.CreateSolver("SCIP")
         if not solver:
             return
 
-        infinity = solver.infinity()
+        # Initialising variables as binary integers
         x = {}
-        for j in range(data["num_vars"]):
-            x[j] = solver.BoolVar("x[%i]" % j)
+        for day in range(days):
+            for time in range(time_blocks):
+                for room in range(rooms):
+                    for event in range(events):
+                        index = self.__compute_index(
+                            USCP_Params(events, days, time_blocks, rooms),
+                            day,
+                            time,
+                            room,
+                            event)
+                        x[index] = solver.BoolVar(
+                            self.__generate_event_description(day, time, room, event)
+                        )
+
         print("Number of variables =", solver.NumVariables())
+
+        # Creating constraints
+        data['constraint_coeffs'] = []
+        data['bounds'] = []
+
+        # 1) at any day, time_block and room, there can only be 1 event
+        for day in range(days):
+            for time in range(time_blocks):
+                for room in range(rooms):
+                    arr = [0] * data['num_vars']
+                    for event in range(events):
+                        index = self.__compute_index(
+                            USCP_Params(events, days, time_blocks, rooms),
+                            day,
+                            time,
+                            room,
+                            event)
+                        arr[index] = 1
+                    data['constraint_coeffs'].append(arr)
+                    data['bounds'].append(1)
+        # 2) each event is scheduled a maximum of once
+        for event in range(events):
+            arr = [0] * data['num_vars']
+            for day in range(days):
+                for time in range(time_blocks):
+                    for room in range(rooms):
+                        index = self.__compute_index(
+                            USCP_Params(events, days, time_blocks, rooms),
+                            day,
+                            time,
+                            room,
+                            event)
+                        arr[index] = 1
+
+            data['constraint_coeffs'].append(arr)
+            data['bounds'].append(1)
+
+        data['num_constraints'] = len(data['constraint_coeffs'])
 
         for i in range(data["num_constraints"]):
             constraint = solver.RowConstraint(0, data["bounds"][i], "")
             for j in range(data["num_vars"]):
                 constraint.SetCoefficient(x[j], data["constraint_coeffs"][i][j])
         print("Number of constraints =", solver.NumConstraints())
-        # In Python, you can also set the constraints as follows.
-        # for i in range(data['num_constraints']):
-        #  constraint_expr = \
-        # [data['constraint_coeffs'][i][j] * x[j] for j in range(data['num_vars'])]
-        #  solver.Add(sum(constraint_expr) <= data['bounds'][i])
 
+        # Create Objective Function
         objective = solver.Objective()
         for j in range(data["num_vars"]):
             objective.SetCoefficient(x[j], data["obj_coeffs"][j])
         objective.SetMaximization()
-        # In Python, you can also set the objective as follows.
-        # obj_expr = [data['obj_coeffs'][j] * x[j] for j in range(data['num_vars'])]
-        # solver.Maximize(solver.Sum(obj_expr))
 
         status = solver.Solve()
 
         if status == pywraplp.Solver.OPTIMAL:
             print("Objective value =", solver.Objective().Value())
             for j in range(data["num_vars"]):
-                print(x[j].name(), " = ", x[j].solution_value())
+                if x[j].solution_value() == 1:
+                    print(x[j].name(), " = ", x[j].solution_value())
             print()
             print("Problem solved in %f milliseconds" % solver.wall_time())
             print("Problem solved in %d iterations" % solver.iterations())
