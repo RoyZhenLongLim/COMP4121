@@ -1,4 +1,4 @@
-def generate_event_description(course_code: str, event_type: str, day: int, time: int, room:int) -> str:
+def generate_event_description(course_code: str, event_type: str, day: int, time: int, room: int) -> str:
     day_map = {
         0: 'Monday',
         1: 'Tuesday',
@@ -18,8 +18,11 @@ def generate_event_description(course_code: str, event_type: str, day: int, time
 
 
 def compute_index(config, course, event, day, time, room):
-    return course * (config.events[course] * config.days * config.time_blocks * config.rooms) + \
+    # Randomised index means it generates a schedule for you
+    return config.random_index(
+        course * (config.events[course] * config.days * config.time_blocks * config.rooms) + \
         event * (config.days * config.time_blocks * config.rooms) + \
         day * (config.time_blocks * config.rooms) + \
         time * config.rooms + \
         room
+    )

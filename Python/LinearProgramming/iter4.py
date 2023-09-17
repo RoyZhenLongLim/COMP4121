@@ -15,12 +15,23 @@ class LP4:
             Course("PHYS1111",
                    [
                        Event("LEC", ["A"]),
-                       Event("TUT", ["B"]),
+                       Event("LEC", ["A"]),
+                       Event("OTH", ["B"]),
+                       Event("LAB", ["C"]),
                    ]),
-            Course("PHYS1211",
+            Course("PHYS1121",
                    [
                        Event("LEC", ["A"]),
-                       Event("TUT", ["B"]),
+                       Event("LEC", ["A"]),
+                       Event("OTH", ["B"]),
+                       Event("LAB", ["C"]),
+                   ]),
+            Course("PHYS1131",
+                   [
+                       Event("LEC", ["A"]),
+                       Event("LEC", ["A"]),
+                       Event("OTH", ["B"]),
+                       Event("LAB", ["C"]),
                    ])
         ]
 
@@ -71,16 +82,48 @@ class LP4:
         data['bounds'] = []
 
         # 1) at any day, time_block and room, there can only be 1 event
+        for day in range(days):
+            for time in range(time_blocks):
+                for room in range(rooms):
+                    arr = [0] * data['num_vars']
+                    for course in range(courses):
+                        for event in range(events[course]):
+                            index = compute_index(config, course, event, day, time, room)
+                            arr[index] = 1
+                    data['constraint_coeffs'].append(arr)
+                    data['bounds'].append(1)
+
         # 2) each event is scheduled a maximum of once
-        # 3) not event from each course can be scheduled at any same time
+        for course in range(courses):
+            for event in range(events[course]):
+                arr = [0] * data['num_vars']
+                for day in range(days):
+                    for time in range(time_blocks):
+                        for room in range(rooms):
+                            index = compute_index(config, course, event, day, time, room)
+                            arr[index] = 1
+                data['constraint_coeffs'].append(arr)
+                data['bounds'].append(1)
+
+        # 3) for any course, at most one event is scheduled at any given time
+        for course in range(courses):
+            for day in range(days):
+                for time in range(time_blocks):
+                    arr = [0] * data['num_vars']
+                    for event in range(events[course]):
+                        for room in range(rooms):
+                            index = compute_index(config, course, event, day, time, room)
+                            arr[index] = 1
+                    data['constraint_coeffs'].append(arr)
+                    data['bounds'].append(1)
 
         data['num_constraints'] = len(data['constraint_coeffs'])
 
-        # for i in range(data["num_constraints"]):
-        #     constraint = solver.RowConstraint(0, data["bounds"][i], "")
-        #     for j in range(data["num_vars"]):
-        #         constraint.SetCoefficient(x[j], data["constraint_coeffs"][i][j])
-        # print("Number of constraints =", solver.NumConstraints())
+        for i in range(data["num_constraints"]):
+            constraint = solver.RowConstraint(0, data["bounds"][i], "")
+            for j in range(data["num_vars"]):
+                constraint.SetCoefficient(x[j], data["constraint_coeffs"][i][j])
+        print("Number of constraints =", solver.NumConstraints())
 
         # Create Objective Function
         objective = solver.Objective()
@@ -93,7 +136,8 @@ class LP4:
         if status == pywraplp.Solver.OPTIMAL:
             print("Objective value =", solver.Objective().Value())
             for j in range(data["num_vars"]):
-                print(x[j].name(), " = ", x[j].solution_value())
+                if x[j].solution_value() == 1:
+                    print(x[j].name())
             print()
             print("Problem solved in %f milliseconds" % solver.wall_time())
             print("Problem solved in %d iterations" % solver.iterations())
