@@ -20,4 +20,8 @@ python3 Python/LinearProgramming/iter5.py
 
 # Genetic Algorithm
 
+```
+python3 Python/GeneticAlgorithms/main.py
+```
+
 # Ant Colony Algorithm
