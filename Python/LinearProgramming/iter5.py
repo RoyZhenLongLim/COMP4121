@@ -1,9 +1,9 @@
 from ortools.linear_solver import pywraplp
 
-from Python.LinearProgramming.iter4_helper.USCP_Params import USCP_Params
-from Python.LinearProgramming.iter4_helper.course import Course
-from Python.LinearProgramming.iter4_helper.event import Event
-from Python.LinearProgramming.iter4_helper.helper import compute_index, generate_event_description
+from iter4_helper.helper import *
+from iter4_helper.USCP_Params import USCP_Params
+from iter4_helper.course import Course
+from iter4_helper.event import Event
 
 
 class LP5:

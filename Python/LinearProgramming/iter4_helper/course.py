@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 
-from Python.LinearProgramming.iter2_helper.event import Event
-
+# FYI: This is a horrible approach but it won't work with it for some reason :(
+@dataclass
+class Event:
+    event_type: str
+    allowed_rooms: list[int]
 
 @dataclass
 class Course:
@@ -21,3 +24,5 @@ class Course:
         print(f'Course Code: {self.course_code}')
         for event in self.events:
             print(f"    Event {event.event_type} can be scheduled in Rooms: {event.allowed_rooms}")
+
+
