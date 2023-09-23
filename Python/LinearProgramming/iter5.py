@@ -41,6 +41,11 @@ class LP5:
         time_blocks = 2
         rooms = 3
 
+        # Prints course that need to be scheduled
+        for course in input:
+            course.print_course()
+        print()
+
         config = USCP_Params(
             courses,
             events,
@@ -157,6 +162,8 @@ class LP5:
                             arr[index] = 1
                 data['constraint_coeffs'].append(arr)
                 data['bounds'].append(1)
+
+
 
         data['num_constraints'] = len(data['constraint_coeffs'])
 
