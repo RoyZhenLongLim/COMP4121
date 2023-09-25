@@ -3,11 +3,15 @@ import random
 
 class PasswordGuesser:
     password: str
+    verbose: bool
     geneSet = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!."
 
     def __init__(self, password: str):
         self.password = password
         random.seed()
+
+    def set_verbose(self, b: bool):
+        self.verbose = b
 
     def guess(self):
         bestParent = self.__generate_parent(len(self.password))
@@ -21,7 +25,8 @@ class PasswordGuesser:
             if childFitness <= bestFitness:
                 continue
 
-            self.__display(child)
+            if self.verbose:
+                self.__display(child)
             # If I guessed correctly, exit loop
             if childFitness >= len(bestParent):
                 break
