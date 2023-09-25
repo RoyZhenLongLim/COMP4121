@@ -7,5 +7,5 @@ class Algorithm:
     def crossover(self):
         pass
 
-    def mutation(self):
+    def mutate(self):
         pass
