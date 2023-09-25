@@ -5,7 +5,7 @@ class PasswordGuesser:
     password: str
     geneSet = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!."
 
-    def __init__(self, password):
+    def __init__(self, password: str):
         self.password = password
         random.seed()
 
@@ -41,6 +41,10 @@ class PasswordGuesser:
         return ''.join(genes)
 
     def __get_fitness(self, guess: str) -> int:
+        """
+        :param guess:
+        :return: How many characters match the original
+        """
         return sum(1 for expected, actual in zip(self.password, guess) if expected == actual)
 
     def __mutate(self, parent):
