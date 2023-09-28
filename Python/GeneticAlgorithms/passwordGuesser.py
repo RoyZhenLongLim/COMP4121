@@ -2,6 +2,9 @@ import random
 
 
 class PasswordGuesser:
+    """
+    Basic password guesser that implements mutations
+    """
     password: str
     verbose: bool
     geneSet = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!."
