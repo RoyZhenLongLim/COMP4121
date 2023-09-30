@@ -6,8 +6,8 @@ class PasswordGuesser:
     Basic password guesser that implements mutations
     """
     password: str
-    verbose: bool
     geneSet = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!."
+    verbose = True
 
     def __init__(self, password: str):
         self.password = password

@@ -1,6 +1,8 @@
+import random
 import time
 from statistics import mean, stdev
 
+from guesser import Guesser
 from passwordGuesser import PasswordGuesser
 
 
@@ -18,17 +20,19 @@ def benchmark(fun, n_repeat: int):
 
 
 def main():
-    # Gives a password that the guesser will try to guess using genetic algorithms
-    def run_guesser():
-        password = "Hello World! This is my first attempt at creating a genetic algorithm"
-        guesser = PasswordGuesser(password)
-        guesser.set_verbose(False)
-        guesser.guess()
+    def f():
+        # Randomly generate a 10 integer long target, where each integer are in [0, 50)
+        limit = 50
+        target = random.sample(range(limit), 10)
+        guesser = Guesser(target, limit)
+        # guesser.set_verbose(False)
+        guesser.solve()
 
-    benchmark(
-        run_guesser,
-        50
-    )
+    # def f():
+    #     g = PasswordGuesser("Hello World Hello Hwllo")
+    #     g.guess()
+    f()
+    # benchmark(f, 50)
 
 
 if __name__ == "__main__":
