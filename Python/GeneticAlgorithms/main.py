@@ -24,10 +24,10 @@ def main():
         Course(
             "PHYS1111",
             [
-                Event(EventType.LEC),
-                Event(EventType.LEC),
-                Event(EventType.LAB),
-                Event(EventType.OTH),
+                Event(EventType.LEC, 2),
+                Event(EventType.LEC, 2),
+                Event(EventType.LAB, 2),
+                Event(EventType.OTH, 2),
             ]
         ),
     ]
