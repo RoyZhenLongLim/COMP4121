@@ -1,9 +1,9 @@
-import random
 import time
 from statistics import mean, stdev
 
-from guesser import Guesser
-from passwordGuesser import PasswordGuesser
+from helper.event_type import EventType
+from helper.course import Course
+from helper.event import Event
 
 
 def benchmark(fun, n_repeat: int):
@@ -20,19 +20,17 @@ def benchmark(fun, n_repeat: int):
 
 
 def main():
-    def f():
-        # Randomly generate a 10 integer long target, where each integer are in [0, 50)
-        limit = 50
-        target = random.sample(range(limit), 10)
-        guesser = Guesser(target, limit)
-        # guesser.set_verbose(False)
-        guesser.solve()
-
-    # def f():
-    #     g = PasswordGuesser("Hello World Hello Hwllo")
-    #     g.guess()
-    f()
-    # benchmark(f, 50)
+    data = [
+        Course(
+            "PHYS1111",
+            [
+                Event(EventType.LEC),
+                Event(EventType.LEC),
+                Event(EventType.LAB),
+                Event(EventType.OTH),
+            ]
+        ),
+    ]
 
 
 if __name__ == "__main__":

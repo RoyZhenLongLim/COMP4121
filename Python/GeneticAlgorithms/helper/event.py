@@ -1,7 +1,7 @@
 from dataclasses import dataclass
+from event_type import EventType
 
 
 @dataclass
 class Event:
-    event_type: str
-    allowed_rooms: list[int]
+    event_type: EventType
