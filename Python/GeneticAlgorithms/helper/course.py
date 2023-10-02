@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from event import Event
+from .event import Event
 
 
 @dataclass

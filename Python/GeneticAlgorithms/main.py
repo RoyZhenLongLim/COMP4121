@@ -4,6 +4,7 @@ from statistics import mean, stdev
 from helper.event_type import EventType
 from helper.course import Course
 from helper.event import Event
+from timetableScheduler import TimetableScheduler
 
 
 def benchmark(fun, n_repeat: int):
@@ -31,6 +32,9 @@ def main():
             ]
         ),
     ]
+
+    s = TimetableScheduler([])
+    s.solve()
 
 
 if __name__ == "__main__":
