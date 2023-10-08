@@ -1,9 +1,6 @@
 import time
 from statistics import mean, stdev
 
-from helper.event_type import EventType
-from helper.course import Course
-from helper.event import Event
 from timetableScheduler import TimetableScheduler
 
 
@@ -21,19 +18,7 @@ def benchmark(fun, n_repeat: int):
 
 
 def main():
-    data = [
-        Course(
-            "PHYS1111",
-            [
-                Event(EventType.LEC, 2),
-                Event(EventType.LEC, 2),
-                Event(EventType.LAB, 2),
-                Event(EventType.OTH, 2),
-            ]
-        ),
-    ]
-
-    s = TimetableScheduler([])
+    s = TimetableScheduler()
     s.solve()
 
 

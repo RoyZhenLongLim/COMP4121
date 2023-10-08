@@ -1,32 +1,28 @@
 import random
 import heapq as hq
 
-from helper.course import Course
 from helper.schedule import Schedule
 
 
 class TimetableScheduler:
     population: [Schedule]
 
-    # State Space
-    days = 5
-    hours_per_day = 12
-    rooms = 2
-
     # Parameters that can be tweaked
     population_size = 10
 
     mutation_probability = 1 / 3
-    mutation_size: int
+    mutation_size = 2
     crossover_probability = 2 / 3
-    crossover_points: int
+    crossover_points = 1
 
-    def __init__(self, courses: [Course]):
-        # TODO FINISH THIS
-        self.population = [Schedule() for _ in range(self.population_size)]
+    def __init__(self):
+        # TODO FINISH INIT Function
+        # TODO LOOK AT Parameters
+        pass
 
     def __crossover(self, parent1: Schedule, parent2: Schedule):
         # TODO CREATE CROSSOVER FUNCTION
+        self.population_size = self.population_size
         if random.uniform(0, 1) > 0.5:
             return parent1
         else:
@@ -62,14 +58,17 @@ class TimetableScheduler:
             # Create 2 * population_size / 3 new populations
             new_schedules = []
             for _ in range(int(2 * self.population_size / 3)):
-                # Select two parents based on their fitness and create a child
+                p1, p2 = self.__select_parents(breeding_pool, w)
                 if random.uniform(0, 1) > self.crossover_probability:
-                    p1, p2 = self.__select_parents(breeding_pool, w)
+                    # Select two parents where probability of being chosen is proportional to fitness
                     child = self.__crossover(p1, p2)
                 else:
-                    child = Schedule()
+                    # Otherwise, use the parents as a basis for new generation
+                    if random.uniform(0, 1) > 0.5:
+                        child = p1
+                    else:
+                        child = p2
 
-                #
                 if random.uniform(0, 1) > self.mutation_probability:
                     child.mutate()
 
