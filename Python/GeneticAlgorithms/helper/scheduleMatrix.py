@@ -9,7 +9,7 @@ class ScheduleMatrix:
             [
                 [
                     [] for _ in range(config["rooms"])
-                ] for _ in range(config["time_blocks"])
+                ] for _ in range(config["timeBlocks"])
             ] for _ in range(config["days"])
         ]
 

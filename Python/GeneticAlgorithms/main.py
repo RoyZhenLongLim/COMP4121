@@ -24,6 +24,7 @@ def main():
     # Generates test data
     # LEC must be in room 1
     # TUT, OTH must be in room 2
+    # Note events can't be scheduled at the end of the day (e.g. a 2 hours event can't be scheduled
     events = []
     for index in range(1, 2):
         events.extend([
@@ -32,7 +33,7 @@ def main():
                 EventType.LEC,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["time_blocks"])],
+                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
                 [ele for ele in [1]]
             ),
             Event(
@@ -40,7 +41,7 @@ def main():
                 EventType.LEC,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["time_blocks"])],
+                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
                 [ele for ele in [1]]
             ),
             Event(
@@ -48,7 +49,7 @@ def main():
                 EventType.OTH,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["time_blocks"])],
+                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
                 [ele for ele in [2]]
             ),
             Event(
@@ -56,7 +57,7 @@ def main():
                 EventType.LAB,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["time_blocks"])],
+                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
                 [ele for ele in [2]]
             ),
 
