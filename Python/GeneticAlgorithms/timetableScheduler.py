@@ -1,6 +1,7 @@
 import random
 import heapq as hq
 
+from helper.event import Event
 from helper.schedule import Schedule
 
 
@@ -15,10 +16,11 @@ class TimetableScheduler:
     crossover_probability = 2 / 3
     crossover_points = 1
 
-    def __init__(self):
+    def __init__(self, events: [Event]):
         # TODO FINISH INIT Function
         # TODO LOOK AT Parameters
-        pass
+        for e in events:
+            print(e)
 
     def __crossover(self, parent1: Schedule, parent2: Schedule):
         # TODO CREATE CROSSOVER FUNCTION

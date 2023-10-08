@@ -1,6 +1,9 @@
 import time
 from statistics import mean, stdev
 
+from helper.config import config
+from helper.eventType import EventType
+from helper.event import Event
 from timetableScheduler import TimetableScheduler
 
 
@@ -18,7 +21,48 @@ def benchmark(fun, n_repeat: int):
 
 
 def main():
-    s = TimetableScheduler()
+    # Generates test data
+    # LEC must be in room 1
+    # TUT, OTH must be in room 2
+    events = []
+    for index in range(1, 2):
+        events.extend([
+            Event(
+                f"PHYS11{index}1",
+                EventType.LEC,
+                2,
+                [ele for ele in range(config["days"])],
+                [ele for ele in range(config["time_blocks"])],
+                [ele for ele in [1]]
+            ),
+            Event(
+                f"PHYS11{index}1",
+                EventType.LEC,
+                2,
+                [ele for ele in range(config["days"])],
+                [ele for ele in range(config["time_blocks"])],
+                [ele for ele in [1]]
+            ),
+            Event(
+                f"PHYS11{index}1",
+                EventType.OTH,
+                2,
+                [ele for ele in range(config["days"])],
+                [ele for ele in range(config["time_blocks"])],
+                [ele for ele in [2]]
+            ),
+            Event(
+                f"PHYS11{index}1",
+                EventType.LAB,
+                2,
+                [ele for ele in range(config["days"])],
+                [ele for ele in range(config["time_blocks"])],
+                [ele for ele in [2]]
+            ),
+
+        ])
+
+    s = TimetableScheduler(events)
     s.solve()
 
 
