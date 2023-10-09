@@ -18,8 +18,11 @@ class Event:
     dayTimeRoom: (int, int, int) = field(init=False)
 
     def __str__(self):
-        return f""" {self.courseCode} {self.eventType}
-            allowed days = {self.allowedDays}
-            allowed rooms = {self.allowedRooms}
-            allowed times = {self.allowedTimes}
-        """
+        if self.dayTimeRoom:
+            return "{} {}: Day {} Room {} Time {}".format(self.courseCode, self.eventType, self.dayTimeRoom[0], self.dayTimeRoom[1], self.dayTimeRoom[2])
+        else:
+            return f""" {self.courseCode} {self.eventType}
+                allowed days = {self.allowedDays}
+                allowed rooms = {self.allowedRooms}
+                allowed times = {self.allowedTimes}
+            """

@@ -1,4 +1,5 @@
 import random
+from copy import copy
 from typing import Optional
 
 from .scheduleMatrix import ScheduleMatrix
@@ -47,7 +48,7 @@ class Schedule:
                 d, t, r = generate_day_time_room(event.allowedDays, event.allowedTimes, event.allowedRooms)
                 self.timetable.insert_event(index, d, t, r, event.durationInHours)
                 event.dayTimeRoom = (d, t, r)
-                self.events.append(event)
+                self.events.append(copy(event))
         else:
             # If timetable was pre-generated, we can skip
             self.events = events
@@ -70,7 +71,7 @@ class Schedule:
 
             # Randomised when the event is scheduled and reinsert into the timetable
             d, t, r = generate_day_time_room(event.allowedDays, event.allowedTimes, event.allowedRooms)
-            self.timetable.remove_event(index, d, t, r, event.durationInHours)
+            self.timetable.insert_event(index, d, t, r, event.durationInHours)
             self.events[index].dayTimeRoom = (d, t, r)
 
         self.__compute_fitness()

@@ -11,7 +11,6 @@ class TimetableScheduler:
     # Parameters that can be tweaked
     population_size = 10
 
-
     def __init__(self, events: [Event]):
         # Create initial population
         self.population = []
@@ -19,7 +18,6 @@ class TimetableScheduler:
             self.population.append(
                 Schedule(events)
             )
-
 
     def solve(self) -> Schedule:
         generation = 0
@@ -55,4 +53,3 @@ class TimetableScheduler:
 
             # Take the best solutions in current generation
             self.population = list(hq.nlargest(self.population_size, hq.merge(new_schedules, breeding_pool)))
-
