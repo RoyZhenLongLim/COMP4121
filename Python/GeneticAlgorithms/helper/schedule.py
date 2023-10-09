@@ -79,27 +79,27 @@ class Schedule:
     def crossover(self, other):
         if random.uniform(0, 1) < self.crossover_probability:
             if random.uniform(0, 1) > 0.5:
-                return self
+                return copy(self)
             else:
-                return other
+                return copy(other)
 
         timetable = ScheduleMatrix()
         events = []
 
         mask = generate_mask(
             len(self.events),
-            random.choices([ele for ele in range(len(events))], k=self.crossover_points)
+            random.choices([ele for ele in range(len(self.events))], k=self.crossover_points)
         )
 
         # Perform crossover
-        for index, left, right in enumerate(zip(self.events, other.events)):
+        for index, (left, right) in enumerate(zip(self.events, other.events)):
             if mask[index]:
-                e = left
+                e = copy(left)
             else:
-                e = right
+                e = copy(right)
             events.append(e)
-            d, t, r = e.DayTimeRoom
-            timetable.insert_event(index, d, t, r, e.duration)
+            d, t, r = e.dayTimeRoom
+            timetable.insert_event(index, d, t, r, e.durationInHours)
 
         return Schedule(events, timetable)
 
