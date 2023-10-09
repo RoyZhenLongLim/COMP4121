@@ -14,6 +14,7 @@ def generate_day_time_room(days: [int], times: [int], rooms: [int]) -> (int, int
         random.choice(rooms)
     )
 
+
 def generate_mask(n: int, pts: [int]) -> [int]:
     """
     Returns a mask for crossovers
@@ -114,8 +115,8 @@ class Schedule:
         return self.fitness <= other.fitness
 
     def __str__(self):
-        str = "\n"
+        representation = "\n"
         for event in self.events:
             d, t, r = event.dayTimeRoom
-            str += f"    {event.courseCode} {event.eventType} Day {d} Time {t}-{event.durationInHours} Room {r} \n"
-        return str
+            representation += f"    {event.courseCode} {event.eventType} Day {d} Time {t}-{event.durationInHours} Room {r} \n"
+        return representation
