@@ -30,7 +30,7 @@ class TimetableScheduler:
             best_schedule = hq.nlargest(1, breeding_pool)[0]
 
             # Display the best solution in current generation
-            print("Generation {}: ".format(generation), end="")
+            print("Generation {}: Fitness: {}".format(generation, best_schedule.fitness), end="")
             print(best_schedule)
             generation = generation + 1
 

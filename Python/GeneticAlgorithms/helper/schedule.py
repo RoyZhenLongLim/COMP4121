@@ -114,5 +114,8 @@ class Schedule:
         return self.fitness <= other.fitness
 
     def __str__(self):
-        # TODO Modify to show more information regarding the schedules
-        return "Fitness: {}".format(self.fitness)
+        str = "\n"
+        for event in self.events:
+            d, t, r = event.dayTimeRoom
+            str += f"    {event.courseCode} {event.eventType} Day {d} Time {t}-{event.durationInHours} Room {r} \n"
+        return str
