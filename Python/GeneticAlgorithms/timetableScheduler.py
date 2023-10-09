@@ -46,7 +46,8 @@ class TimetableScheduler:
             for _ in range(int(2 * self.population_size / 3)):
                 # Probability of being selected is proportional to fitness
                 p1, p2 = random.choices(breeding_pool, weights=w, k=2)
-                child = p1.crossover(p2)
+                child = p1
+                # child = p1.crossover(p2)
                 child.mutate()
                 new_schedules.append(child)
 

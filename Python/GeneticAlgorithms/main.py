@@ -1,11 +1,20 @@
 import time
+import random
 from statistics import mean, stdev
 
+from helper.scheduleMatrix import ScheduleMatrix
 from helper.config import config
 from helper.eventType import EventType
 from helper.event import Event
 from timetableScheduler import TimetableScheduler
 
+def generate_day_time_room(days: [int], times: [int], rooms: [int]) -> (int, int, int):
+    # Randomly select a day
+    return (
+        random.choice(days),
+        random.choice(times),
+        random.choice(rooms)
+    )
 
 def benchmark(fun, n_repeat: int):
     run_time = []
@@ -34,31 +43,31 @@ def main():
                 2,
                 [ele for ele in range(config["days"])],
                 [ele for ele in range(config["timeBlocks"] - 2 + 1)],
-                [ele for ele in [1]]
+                [ele for ele in [0]]
             ),
             Event(
                 f"PHYS11{index}1",
                 EventType.LEC,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["timeBlocks"] - 2)],
-                [ele for ele in [1]]
+                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
+                [ele for ele in [0]]
             ),
             Event(
                 f"PHYS11{index}1",
                 EventType.OTH,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["timeBlocks"] - 2)],
-                [ele for ele in [2]]
+                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
+                [ele for ele in [1]]
             ),
             Event(
                 f"PHYS11{index}1",
                 EventType.LAB,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["timeBlocks"] - 2)],
-                [ele for ele in [2]]
+                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
+                [ele for ele in [1]]
             ),
 
         ])
