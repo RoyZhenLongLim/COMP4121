@@ -21,13 +21,6 @@ class TimetableScheduler:
             )
 
 
-    def __select_parents(self, breeding_pool, w):
-        """
-        Probability of being selected is proportional to fitness (i.e. weight given)
-        :return: two parents from the breeding pool
-        """
-        return random.choices(breeding_pool, weights=w, k=2)
-
     def solve(self) -> Schedule:
         generation = 0
         while generation < 10:
@@ -51,7 +44,8 @@ class TimetableScheduler:
             # Create 2 * population_size / 3 new populations
             new_schedules = []
             for _ in range(int(2 * self.population_size / 3)):
-                p1, p2 = self.__select_parents(breeding_pool, w)
+                # Probability of being selected is proportional to fitness
+                p1, p2 = random.choices(breeding_pool, weights=w, k=2)
                 child = p1.crossover(p2)
                 child.mutate()
                 new_schedules.append(child)

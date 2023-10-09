@@ -41,7 +41,7 @@ def main():
                 EventType.LEC,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
+                [ele for ele in range(config["timeBlocks"] - 2)],
                 [ele for ele in [1]]
             ),
             Event(
@@ -49,7 +49,7 @@ def main():
                 EventType.OTH,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
+                [ele for ele in range(config["timeBlocks"] - 2)],
                 [ele for ele in [2]]
             ),
             Event(
@@ -57,7 +57,7 @@ def main():
                 EventType.LAB,
                 2,
                 [ele for ele in range(config["days"])],
-                [ele for ele in range(config["timeBlocks"] - 2 + 1)],
+                [ele for ele in range(config["timeBlocks"] - 2)],
                 [ele for ele in [2]]
             ),
 

@@ -1,5 +1,5 @@
 config = {
     "days": 5,
-    "timeBlock": 4,
+    "timeBlocks": 4,
     "rooms": 2
 }

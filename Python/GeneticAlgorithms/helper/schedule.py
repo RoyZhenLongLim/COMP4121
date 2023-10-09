@@ -13,6 +13,18 @@ def generate_day_time_room(days: [int], times: [int], rooms: [int]) -> (int, int
         random.choice(rooms)
     )
 
+def generate_mask(n: int, pts: [int]) -> [int]:
+    """
+    Returns a mask for crossovers
+    """
+    arr = []
+    ele = True
+    for index in range(n):
+        if index in pts:
+            ele = not ele
+        arr.append(ele)
+    return arr
+
 
 class Schedule:
     fitness = 1
@@ -29,6 +41,7 @@ class Schedule:
         if timetable is None:
             # Generate a new timetable
             self.timetable = ScheduleMatrix()
+            self.events = []
 
             for index, event in enumerate(events):
                 d, t, r = generate_day_time_room(event.allowedDays, event.allowedTimes, event.allowedRooms)
@@ -64,20 +77,25 @@ class Schedule:
 
     def crossover(self, other):
         if random.uniform(0, 1) < self.crossover_probability:
-            return self
+            if random.uniform(0, 1) > 0.5:
+                return self
+            else:
+                return other
 
         timetable = ScheduleMatrix()
         events = []
 
-        # Choose crossover points
-        crossover = random.choices([ele for ele in range(len(events))], k=self.crossover_points)
-        crossover_mask = [0] * len(events)
+        mask = generate_mask(
+            len(self.events),
+            random.choices([ele for ele in range(len(events))], k=self.crossover_points)
+        )
 
         # Perform crossover
         for index, left, right in enumerate(zip(self.events, other.events)):
-            # TODO FIX THIS
-            e = left
-
+            if mask[index]:
+                e = left
+            else:
+                e = right
             events.append(e)
             d, t, r = e.DayTimeRoom
             timetable.insert_event(index, d, t, r, e.duration)
