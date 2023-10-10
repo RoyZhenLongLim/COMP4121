@@ -31,7 +31,7 @@ def generate_mask(n: int, pts: [int]) -> [int]:
 class Schedule:
     fitness = 1
     timetable: ScheduleMatrix
-    events: [Event]
+    events: [(Event, int, int, int)]
 
     # Parameters that can be tweaked
     mutation_probability = 1 / 3
@@ -49,7 +49,7 @@ class Schedule:
                 d, t, r = generate_day_time_room(event.allowedDays, event.allowedTimes, event.allowedRooms)
                 self.timetable.insert_event(index, d, t, r, event.durationInHours)
                 event.dayTimeRoom = (d, t, r)
-                self.events.append(copy(event))
+                self.events.append((event, d, t, r))
         else:
             # If timetable was pre-generated, we can skip
             self.events = events
@@ -66,14 +66,13 @@ class Schedule:
 
         for index in toMutate:
             # Remove event from timetable
-            d, t, r = self.events[index].dayTimeRoom
-            event = self.events[index]
+            event, d, t, r = self.events[index]
             self.timetable.remove_event(index, d, t, r, event.durationInHours)
 
             # Randomised when the event is scheduled and reinsert into the timetable
             d, t, r = generate_day_time_room(event.allowedDays, event.allowedTimes, event.allowedRooms)
             self.timetable.insert_event(index, d, t, r, event.durationInHours)
-            self.events[index].dayTimeRoom = (d, t, r)
+            self.events[index] = (event, d, t, r)
 
         self.__compute_fitness()
 
@@ -95,11 +94,10 @@ class Schedule:
         # Perform crossover
         for index, (left, right) in enumerate(zip(self.events, other.events)):
             if mask[index]:
-                e = copy(left)
+                (e, d, t, r) = copy(left)
             else:
-                e = copy(right)
-            events.append(e)
-            d, t, r = e.dayTimeRoom
+                (e, d, t, r) = copy(right)
+            events.append((e, d, t, r))
             timetable.insert_event(index, d, t, r, e.durationInHours)
 
         return Schedule(events, timetable)
@@ -116,7 +114,6 @@ class Schedule:
 
     def __str__(self):
         representation = "\n"
-        for event in self.events:
-            d, t, r = event.dayTimeRoom
+        for event, d, t, r in self.events:
             representation += f"    {event.courseCode} {event.eventType} Day {d} Time {t}-{event.durationInHours} Room {r} \n"
         return representation
