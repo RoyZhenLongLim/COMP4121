@@ -23,6 +23,10 @@ class TimetableScheduler:
 
     def solve(self) -> Schedule:
         generation = 0
+        counter = 0
+        countdown_started = False
+        best_fitness_so_far = 0
+
         while True:
             # Create breeding pool
             breeding_pool = self.population
@@ -38,9 +42,18 @@ class TimetableScheduler:
             print(best_schedule)
             generation = generation + 1
 
-            # TODO FIX THIS
             if best_schedule.fitness > self.criteria:
-                return best_schedule
+                # Once we found the best solution, start a countdown to see if solution can be improved within a
+                # fixed number of generations
+                # If we get a better solution, start the countdown again
+                if not countdown_started or best_schedule.fitness > best_fitness_so_far:
+                    countdown_started = True
+                    counter = max(generation / 4, 100)
+                    best_fitness_so_far = best_schedule.fitness
+
+                counter -= 1
+                if counter <= 0:
+                    return best_schedule
 
             # Create 2 * population_size / 3 new populations
             new_schedules = []

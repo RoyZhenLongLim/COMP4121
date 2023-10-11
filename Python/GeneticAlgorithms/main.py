@@ -36,7 +36,7 @@ def main():
     # TUT, OTH must be in room 2
     # Note events can't be scheduled at the end of the day (e.g. a 2 hours event can't be scheduled
     events = []
-    for i in range(1, 3):
+    for i in range(1, 9):
         events.extend([
             Event(
                 f"PHYS11{i}1",
@@ -44,7 +44,7 @@ def main():
                 2,
                 [ele for ele in range(config["days"])],
                 [ele for ele in range(config["timeBlocks"] - 2 + 1)],
-                [ele for ele in [0]]
+                [ele for ele in [0, 1, 2, 3]]
             ),
             Event(
                 f"PHYS11{i}1",
@@ -52,7 +52,7 @@ def main():
                 2,
                 [ele for ele in range(config["days"])],
                 [ele for ele in range(config["timeBlocks"] - 2 + 1)],
-                [ele for ele in [0]]
+                [ele for ele in [0, 1, 2, 3]]
             ),
             Event(
                 f"PHYS11{i}1",
@@ -60,7 +60,7 @@ def main():
                 2,
                 [ele for ele in range(config["days"])],
                 [ele for ele in range(config["timeBlocks"] - 2 + 1)],
-                [ele for ele in [1]]
+                [ele for ele in [4, 5, 6]]
             ),
             Event(
                 f"PHYS11{i}1",
@@ -68,7 +68,7 @@ def main():
                 2,
                 [ele for ele in range(config["days"])],
                 [ele for ele in range(config["timeBlocks"] - 2 + 1)],
-                [ele for ele in [1]]
+                [ele for ele in [4, 5, 6]]
             ),
         ])
 

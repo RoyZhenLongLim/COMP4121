@@ -29,6 +29,7 @@ def overlap(d1, t1, duration1, d2, t2, duration2) -> bool:
         start2, end2 = t2, t2 + duration2
         return not (start1 < start2 and end1 <= start2) or (start1 >= end2 and end1 > end2)
 
+
 def earlier(d1, t1, d2, t2) -> bool:
     """
     Returns if first event is earlier than second event
@@ -50,6 +51,20 @@ def generate_mask(n: int, pts: [int]) -> [int]:
             ele = not ele
         arr.append(ele)
     return arr
+
+
+def day(d):
+    match d:
+        case 0:
+            return "Monday"
+        case 1:
+            return "Tuesday"
+        case 2:
+            return "Wednesday"
+        case 3:
+            return "Thursday"
+        case 4:
+            return "Friday"
 
 
 class Schedule:
@@ -139,12 +154,21 @@ class Schedule:
 
         # Check that no two events in the same course have the day, time with overlapping duration
         courses = [list(ele) for _, ele in groupby(self.events, lambda ele: list(ele)[0].courseCode)]
+
         for course in courses:
             for (e1, d1, t1, r1), (e2, d2, t2, r2) in combinations(course, r=2):
                 if overlap(d1, t1, e1.durationInHours, d2, t2, e2.durationInHours):
                     fitness -= 1
 
-        # If multiple lectures are scheduled on same day, deduct a point
+        # If multiple lectures are scheduled on same day, reduce fitness by 1
+        for course in courses:
+            lec_per_day = [0] * 5
+            for (e, d, t, r) in course:
+                if e.eventType == EventType.LEC:
+                    lec_per_day[d] += 1
+            for lecs in lec_per_day:
+                if lecs > 1:
+                    fitness -= 1
 
         # Implement Soft Constraints
         # Soft constraint bonus only occurs when
@@ -168,5 +192,5 @@ class Schedule:
     def __str__(self):
         representation = "\n"
         for event, d, t, r in self.events:
-            representation += f"    {event.courseCode} {event.eventType} Day {d} Time {t}-{t + event.durationInHours} Room {r} \n"
+            representation += f"    {event.courseCode} {event.eventType} {day(d)} Time {9 + t}-{9 + t + event.durationInHours} Room {r} \n"
         return representation
