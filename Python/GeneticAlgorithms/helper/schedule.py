@@ -2,7 +2,9 @@ import random
 from copy import copy
 from typing import Optional
 from itertools import groupby, combinations
+from math import log2
 
+from .eventType import EventType
 from .scheduleMatrix import ScheduleMatrix
 from .event import Event
 
@@ -26,6 +28,15 @@ def overlap(d1, t1, duration1, d2, t2, duration2) -> bool:
         start1, end1 = t1, t1 + duration1
         start2, end2 = t2, t2 + duration2
         return not (start1 < start2 and end1 <= start2) or (start1 >= end2 and end1 > end2)
+
+def earlier(d1, t1, d2, t2) -> bool:
+    """
+    Returns if first event is earlier than second event
+    """
+    if d1 < d2:
+        return True
+    else:
+        return t1 < t2
 
 
 def generate_mask(n: int, pts: [int]) -> [int]:
@@ -131,17 +142,23 @@ class Schedule:
         for course in courses:
             for (e1, d1, t1, r1), (e2, d2, t2, r2) in combinations(course, r=2):
                 if overlap(d1, t1, e1.durationInHours, d2, t2, e2.durationInHours):
-                    fitness = fitness - 1
+                    fitness -= 1
 
-        # courses = [list((e, d, t, r)) for _, (e, d, t, r) in groupby(self.events, key=lambda e: e[0].courseCode)]
-        # for course in courses:
-        #     # Perform pairwise check to see if there are any
-        #     pairs = combinations(course, r=2)
-        #     for (e1, d1, t1, r1), (e2, d2, t2, r2) in pairs:
-        #         if overlap(d1, t1, r1, d2, t2, r2):
-        #             fitness = fitness - 1
+        # If multiple lectures are scheduled on same day, deduct a point
 
-        # TODO: Implement Soft Constraints
+        # Implement Soft Constraints
+        # Soft constraint bonus only occurs when
+        if fitness > len(self.events):
+            bonus = 1
+            # If the first event scheduled is a LEC, bonus points (this is to ensure
+            for course in courses:
+                (E, D, T, R) = course[0]
+                for (e, d, t, r) in course:
+                    if earlier(d, t, D, T):
+                        (E, D, T, R) = (e, d, t, r)
+                if E.eventType == EventType.LEC:
+                    bonus += 1
+            fitness += log2(bonus)
 
         self.fitness = fitness
 
