@@ -1,6 +1,7 @@
 import random
 from copy import copy
 from typing import Optional
+from itertools import groupby, combinations
 
 from .scheduleMatrix import ScheduleMatrix
 from .event import Event
@@ -13,6 +14,18 @@ def generate_day_time_room(days: [int], times: [int], rooms: [int]) -> (int, int
         random.choice(times),
         random.choice(rooms)
     )
+
+
+def overlap(d1, t1, duration1, d2, t2, duration2) -> bool:
+    """
+    Check if two events are overlapping
+    """
+    if d1 is not d2:
+        return False
+    else:
+        start1, end1 = t1, t1 + duration1
+        start2, end2 = t2, t2 + duration2
+        return not (start1 < start2 and end1 <= start2) or (start1 >= end2 and end1 > end2)
 
 
 def generate_mask(n: int, pts: [int]) -> [int]:
@@ -36,7 +49,7 @@ class Schedule:
     # Parameters that can be tweaked
     mutation_probability = 1 / 3
     crossover_probability = 2 / 3
-    mutation_size = 2
+    mutation_size = 1
     crossover_points = 1
 
     def __init__(self, events: [Event], timetable: Optional[ScheduleMatrix] = None):
@@ -103,11 +116,34 @@ class Schedule:
         return Schedule(events, timetable)
 
     def __compute_fitness(self):
-        # TODO: Implement hard constraints
+        fitness = 1
         # Hard Constraints
         # Check that no two events have overlapping day, time, room
+        for e, d, t, r in self.events:
+            hours = self.timetable.get_events(d, t, r, e.durationInHours)
+            if any(len(events) > 1 for events in hours):
+                continue
+            # For each event that does not overlap with another event, add 1 to fitness
+            fitness += 1
+
         # Check that no two events in the same course have the day, time with overlapping duration
-        self.fitness = random.randint(0, 5)
+        courses = [list(ele) for _, ele in groupby(self.events, lambda ele: list(ele)[0].courseCode)]
+        for course in courses:
+            for (e1, d1, t1, r1), (e2, d2, t2, r2) in combinations(course, r=2):
+                if overlap(d1, t1, e1.durationInHours, d2, t2, e2.durationInHours):
+                    fitness = fitness - 1
+
+        # courses = [list((e, d, t, r)) for _, (e, d, t, r) in groupby(self.events, key=lambda e: e[0].courseCode)]
+        # for course in courses:
+        #     # Perform pairwise check to see if there are any
+        #     pairs = combinations(course, r=2)
+        #     for (e1, d1, t1, r1), (e2, d2, t2, r2) in pairs:
+        #         if overlap(d1, t1, r1, d2, t2, r2):
+        #             fitness = fitness - 1
+
+        # TODO: Implement Soft Constraints
+
+        self.fitness = fitness
 
     def __lt__(self, other):
         return self.fitness <= other.fitness
@@ -115,5 +151,5 @@ class Schedule:
     def __str__(self):
         representation = "\n"
         for event, d, t, r in self.events:
-            representation += f"    {event.courseCode} {event.eventType} Day {d} Time {t}-{event.durationInHours} Room {r} \n"
+            representation += f"    {event.courseCode} {event.eventType} Day {d} Time {t}-{t + event.durationInHours} Room {r} \n"
         return representation

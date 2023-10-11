@@ -1,9 +1,7 @@
 import time
 import random
 from statistics import mean, stdev
-import numpy as np
 
-from Python.GeneticAlgorithms.helper.schedule import Schedule
 from helper.config import config
 from helper.eventType import EventType
 from helper.event import Event
@@ -70,8 +68,16 @@ def main():
             [ele for ele in range(config["days"])],
             [ele for ele in range(config["timeBlocks"] - 2 + 1)],
             [ele for ele in [1]]
-        )
+        ),
     ])
+
+    # from itertools import groupby, combinations
+    # arr = [(e, index, index, index) for index, e in enumerate(events)]
+    #
+    # lst = [list(g) for _, g in groupby(arr, lambda ele: list(ele)[0].courseCode)]
+    #
+    # for (e1, d1, t1, r1), (e2, d2, t2, r2) in combinations(lst[0], r=2):
+    #     print(e1, e2)
 
     s = TimetableScheduler(events)
     s.solve()
