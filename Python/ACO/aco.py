@@ -66,7 +66,7 @@ class AntColony:
 
     def gen_path(self, start: int) -> [(int, int)]:
         """
-        Generates a Hamiltonian Cycle
+        Generates a Hamiltonian Cycle for a specific ant
         """
         path = []
         visited = set()

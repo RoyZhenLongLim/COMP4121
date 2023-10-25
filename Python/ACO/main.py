@@ -1,4 +1,4 @@
-from Python.ACO.aco import AntColony
+from aco import AntColony
 
 
 def main():
