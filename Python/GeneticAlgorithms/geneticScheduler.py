@@ -5,7 +5,7 @@ from helper.event import Event
 from helper.schedule import Schedule
 
 
-class TimetableScheduler:
+class GeneticScheduler:
     population: [Schedule]
     criteria: int
 

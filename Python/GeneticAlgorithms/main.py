@@ -5,7 +5,7 @@ from statistics import mean, stdev
 from helper.config import config
 from helper.eventType import EventType
 from helper.event import Event
-from timetableScheduler import TimetableScheduler
+from geneticScheduler import GeneticScheduler
 
 
 def generate_day_time_room(days: [int], times: [int], rooms: [int]) -> (int, int, int):
@@ -36,7 +36,7 @@ def main():
     # TUT, OTH must be in room 2
     # Note events can't be scheduled at the end of the day (e.g. a 2 hours event can't be scheduled
     events = []
-    for i in range(1, 9):
+    for i in range(1, 3):
         events.extend([
             Event(
                 f"PHYS11{i}1",
@@ -72,7 +72,7 @@ def main():
             ),
         ])
 
-    s = TimetableScheduler(events)
+    s = GeneticScheduler(events)
     s.solve()
 
 
