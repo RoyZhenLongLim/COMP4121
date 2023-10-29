@@ -51,8 +51,8 @@ def main():
                 [ele for ele in [4, 5, 6]]
             ),
         ])
-    n_ants = 10
-    n_best = 3
+    n_ants = 4
+    n_best = 2
     scheduler = AntColonyScheduler(
         n_ants,
         n_best,

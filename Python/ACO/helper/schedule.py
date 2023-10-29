@@ -4,6 +4,7 @@ from .event import Event
 class Schedule:
     events: [Event]
     fitness: float
+    starting_day_time_room: [(int, int, int)]
 
     fitness_evaluated = False
     is_valid_schedule = False
@@ -25,3 +26,6 @@ class Schedule:
     def __str__(self):
         # TODO DO THIS
         return ""
+
+    def add_event_starting_day_time_room(self, d, t, r):
+        self.starting_day_time_room.append((d, t, r))
