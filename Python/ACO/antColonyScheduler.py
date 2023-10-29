@@ -1,6 +1,7 @@
 import numpy as np
 from itertools import groupby
 
+from helper.eventType import EventType
 from helper.event import Event
 from helper.schedule import Schedule
 
@@ -99,6 +100,7 @@ class AntColonyScheduler:
             course_conflicts = []
             for event in course:
                 (d, t, r) = self.generate_day_time_room(
+                    event,
                     self.preference[index],
                     self.pheromones[index],
                     taken,
@@ -106,25 +108,37 @@ class AntColonyScheduler:
                 )
                 for hour in event.durationInHours:
                     taken.append((d, t + hour, r))
-                    course_conflicts.append((d, t + hour))
+                    course_conflicts.append((event.eventType, d, t + hour))
                 s.add_event_starting_day_time_room(d, t, r)
             index += 1
         return s
 
-    def generate_day_time_room(self, available_slots, pheromones, already_taken: (int, int, int),
-                               course_conflict: (int, int)) -> (int, int, int):
+    def generate_day_time_room(self, event: Event, available_slots: [[[int]]], pheromones: [[[int]]], already_taken: (int, int, int),
+                               course_conflict: (EventType, int, int)) -> (int, int, int):
         pher = np.copy(pheromones)
         pref = np.copy(available_slots)
         # Do not schedule in any time slot that has already been taken
         pher[already_taken] = 0
+
         # Do not schedule in any time slot if an event from the same course is already scheduled
-        for (d, t) in course_conflict:
+        for (_, d, t) in course_conflict:
             pher[(d, t)] = 0
+
+        # Do not schedule multiple lectures on the same day
+        if event.eventType == EventType.LEC:
+            for (type, d, _) in course_conflict:
+                if type == EventType.LEC:
+                    pher[d] = 0
+
         # Convert from 3D matrix to 1D array
         pher = np.reshape(pher, -1)
         pref = np.reshape(pref, -1)
         # Compute probability for each time slot to be chosen
         prob = pher ** self.alpha * pref ** self.beta
+
+        if np.sum(prob) == 0:
+            # If there are no available time slots, return -1 for each
+            return -1, -1, -1
         prob = prob / np.sum(prob)
         # Choose a time_slot
         return np.random.choice(self.time_slots, p=prob)
