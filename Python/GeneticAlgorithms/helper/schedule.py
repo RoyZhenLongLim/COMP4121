@@ -171,10 +171,10 @@ class Schedule:
                     fitness -= 1
 
         # Implement Soft Constraints
-        # Soft constraint bonus only occurs when
+        # Soft constraint bonus only occurs when courses are fully scheduled
         if fitness > len(self.events):
             bonus = 1
-            # If the first event scheduled is a LEC, bonus points (this is to ensure
+            # If the first event scheduled is a LEC give bonus points to solution
             for course in courses:
                 (E, D, T, R) = course[0]
                 for (e, d, t, r) in course:
