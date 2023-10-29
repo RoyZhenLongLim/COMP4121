@@ -23,6 +23,8 @@ class AntColonyScheduler:
     tau_max = 10
     tau_min = 1
 
+    default_preference = 10
+
     def __init__(self, n_ants: int, n_best: int, events_to_schedule: [Event], days: int, time_blocks: int, rooms: int):
         self.n_ants = n_ants
         self.n_best = n_best
@@ -34,11 +36,18 @@ class AntColonyScheduler:
         self.preference = np.full((len(events_to_schedule), days, time_blocks, rooms), 0)
         self.pheromones = np.full((len(events_to_schedule), days, time_blocks, rooms), self.tau_max)
 
-        # TODO FINISH THIS UP
         self.time_slots = np.array([
-
+            (d, t, r)
+            for d in range(days)
+            for t in range(time_blocks)
+            for r in range(rooms)
         ])
-        # TODO COMPUTE PREFERENCE MATRIX
+
+        for index, event in enumerate(events_to_schedule):
+            for d in event.allowedDays:
+                for t in event.allowedTimes:
+                    for r in event.allowedRooms:
+                        self.preference[(index, d, t, r)] = self.default_preference
 
     def optimize(self) -> Schedule:
         best_schedule = self.generate_schedule()
@@ -66,16 +75,16 @@ class AntColonyScheduler:
 
     def evaporate_pheromone(self):
         # Pheromone is volatile and will evaporate over time
-        # self.pheromones = self.pheromones * (1 - self.evaporation_constant)
+        self.pheromones = self.pheromones * (1 - self.evaporation_constant)
         # Pheromone cannot go below a minimum ensure that stopping at local minima
-        # self.pheromones[self.pheromones < self.tau_min] = self.tau_min
+        self.pheromones[self.pheromones < self.tau_min] = self.tau_min
         pass
 
     def spread_pheromone(self, s: Schedule):
-        # Pheromone smooth Delta Tau is proportional to tau_max - tau
-        # Delta Tau = (tau_max - tau) / n_best
+        # Pheromone smoothing => change in pheromone is proportional to difference between current pheromone and max
         # The more ants there are, the less effective the pheromone of one ant is
-        pass
+        for pheromone_trail in s.export_event_day_time_room():
+            self.pheromones[pheromone_trail] = (self.tau_max - self.pheromones[pheromone_trail]) / self.n_best
 
     def generate_schedules(self) -> [Schedule]:
         return [self.generate_schedule() for _ in range(self.n_ants)]
@@ -89,7 +98,12 @@ class AntColonyScheduler:
         for course in courses:
             course_conflicts = []
             for event in course:
-                (d, t, r) = self.generate_day_time_room(self.preference[index], self.pheromones[index], [], [])
+                (d, t, r) = self.generate_day_time_room(
+                    self.preference[index],
+                    self.pheromones[index],
+                    taken,
+                    course_conflicts
+                )
                 for hour in event.durationInHours:
                     taken.append((d, t + hour, r))
                     course_conflicts.append((d, t + hour))

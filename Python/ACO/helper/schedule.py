@@ -14,6 +14,7 @@ class Schedule:
 
     def __eval_fitness(self):
         # If all events are scheduled without conflict, set is_valid_schedule to true
+        # TODO FIX THIS
         self.fitness = 1
 
     def __lt__(self, other):
@@ -29,3 +30,15 @@ class Schedule:
 
     def add_event_starting_day_time_room(self, d, t, r):
         self.starting_day_time_room.append((d, t, r))
+
+    def export_event_day_time_room(self) -> [(int, int, int, int)]:
+        """
+        Returns all the time slots booked with their corresponding event in the format (event index, day, time, room)
+        """
+        arr = []
+        for index, (d, t, r) in self.starting_day_time_room:
+            for hour in self.events[index].durartionInHours:
+                arr.append((index, d, t + hour, r))
+            pass
+
+        return arr

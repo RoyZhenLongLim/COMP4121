@@ -62,9 +62,9 @@ def main():
         config["rooms"],
     )
 
-    # print(
-    #     scheduler.optimize()
-    # )
+    print(
+        scheduler.optimize()
+    )
 
 
 if __name__ == "__main__":
