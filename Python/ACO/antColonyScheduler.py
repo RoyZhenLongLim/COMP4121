@@ -42,48 +42,34 @@ class AntColonyScheduler:
 
     def optimize(self) -> Schedule:
         best_schedule = self.generate_schedule()
-
-        generation = 0
-        countdown_started = False
-        counter = 0
-
-        while True:
-            # For each iteration, generate schedule
+        max_iteration = 5000
+        for t in range(max_iteration):
             schedules = self.generate_schedules()
             schedules = sorted(schedules, reverse=True)
 
             # If new best schedule has been found, replace current solution
             if schedules[0] > best_schedule:
                 best_schedule = schedules[0]
-                # If countdown has started, restart it
-                if countdown_started:
-                    counter = max(generation / 4, 100)
-
-            # Once we found the best solution, start a countdown to see if solution can be improved within a
-            # fixed number of generations
-            if not countdown_started and best_schedule.is_valid_schedule:
-                countdown_started = True
-                counter = max(generation / 4, 100)
-
-            if countdown_started:
-                counter -= 1
-                if counter <= 0:
-                    return best_schedule
 
             # Display the best solution in current generation
-            print("Generation {}: Fitness: {}".format(generation, best_schedule.fitness), end="")
+            print("Generation {}: Fitness: {}".format(t, best_schedule.fitness), end="")
             print(best_schedule)
-            generation = generation + 1
 
+            # Pheromone are volatile and evaporate over time,
             self.evaporate_pheromone()
+
+            # The ants with the best path will spread their pheromones
             for s in schedules[:self.n_best]:
                 self.spread_pheromone(s)
 
+        return best_schedule
+
     def evaporate_pheromone(self):
         # Pheromone is volatile and will evaporate over time
-        self.pheromones = self.pheromones * (1 - self.evaporation_constant)
+        # self.pheromones = self.pheromones * (1 - self.evaporation_constant)
         # Pheromone cannot go below a minimum ensure that stopping at local minima
-        self.pheromones[self.pheromones < self.tau_min] = self.tau_min
+        # self.pheromones[self.pheromones < self.tau_min] = self.tau_min
+        pass
 
     def spread_pheromone(self, s: Schedule):
         # Pheromone smooth Delta Tau is proportional to tau_max - tau
@@ -96,9 +82,7 @@ class AntColonyScheduler:
 
     def generate_schedule(self) -> Schedule:
         s = Schedule(self.events)
-        # GROUP COURSES BY COURSE CODE
         taken = []
-
         index = 0
         # Group courses by their course code
         courses = [list(ele) for _, ele in groupby(self.events, lambda ele: ele.courseCode)]
@@ -109,7 +93,7 @@ class AntColonyScheduler:
                 for hour in event.durationInHours:
                     taken.append((d, t + hour, r))
                     course_conflicts.append((d, t + hour))
-                # TODO: Add to schedule
+                s.add_event_starting_day_time_room(d, t, r)
             index += 1
         return s
 
