@@ -2,6 +2,9 @@ import numpy as np
 
 
 class AntColony:
+    """
+    Standard implementation of Ant Colony Optimization on a weighted, undirected graph
+    """
     n_vertices: int
     n_ants: int
     n_best: int
