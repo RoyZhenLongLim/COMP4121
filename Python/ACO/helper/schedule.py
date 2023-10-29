@@ -1,6 +1,20 @@
 from .event import Event
 
 
+def day(d):
+    match d:
+        case 0:
+            return "Monday"
+        case 1:
+            return "Tuesday"
+        case 2:
+            return "Wednesday"
+        case 3:
+            return "Thursday"
+        case 4:
+            return "Friday"
+
+
 class Schedule:
     events: [Event]
     fitness: float
@@ -25,10 +39,14 @@ class Schedule:
         return self.fitness > other.fitness
 
     def __str__(self):
-        # TODO DO THIS
-        return ""
+        representation = "\n"
+        for index, d, t, r in enumerate(self.starting_day_time_room):
+            event = self.events[index]
+            representation += f"    {event.courseCode} {event.eventType} {day(d)} Time {9 + t}-{9 + t + event.durationInHours} Room {r} \n"
+        return representation
 
     def add_event_starting_day_time_room(self, d, t, r):
+        self.fitness_evaluated = False
         self.starting_day_time_room.append((d, t, r))
 
     def export_event_day_time_room(self) -> [(int, int, int, int)]:
