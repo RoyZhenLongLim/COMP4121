@@ -62,10 +62,8 @@ def main():
         config["rooms"],
     )
 
-    # print(
-    #     scheduler.optimize()
-    # )
-asdasdasgfsa
+    s = scheduler.optimize()
+
 
 if __name__ == "__main__":
     main()

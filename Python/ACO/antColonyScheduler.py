@@ -12,7 +12,8 @@ class AntColonyScheduler:
     events: [Event]
     preference: [[int]]
     pheromones: [[float]]
-    time_slots = [(int, int, int)]
+    time_slots: [(int, int, int)]
+    time_slot_index: [int]
     days: int
     time_blocks: int
     rooms: int
@@ -43,6 +44,7 @@ class AntColonyScheduler:
             for t in range(time_blocks)
             for r in range(rooms)
         ])
+        self.time_slot_index = np.array([i for i in range(days * time_blocks * rooms)])
 
         for index, event in enumerate(events_to_schedule):
             for d in event.allowedDays:
@@ -52,7 +54,7 @@ class AntColonyScheduler:
 
     def optimize(self) -> Schedule:
         best_schedule = self.generate_schedule()
-        max_iteration = 5000
+        max_iteration = 10
         for t in range(max_iteration):
             schedules = self.generate_schedules()
             schedules = sorted(schedules, reverse=True)
@@ -62,8 +64,8 @@ class AntColonyScheduler:
                 best_schedule = schedules[0]
 
             # Display the best solution in current generation
-            print("Generation {}: Fitness: {}".format(t, best_schedule.fitness), end="")
-            print(best_schedule)
+            print("Generation {}: Fitness: {}".format(t, best_schedule.fitness), end="\n")
+            # print(best_schedule)
 
             # Pheromone are volatile and evaporate over time,
             self.evaporate_pheromone()
@@ -79,7 +81,6 @@ class AntColonyScheduler:
         self.pheromones = self.pheromones * (1 - self.evaporation_constant)
         # Pheromone cannot go below a minimum ensure that stopping at local minima
         self.pheromones[self.pheromones < self.tau_min] = self.tau_min
-        pass
 
     def spread_pheromone(self, s: Schedule):
         # Pheromone smoothing => change in pheromone is proportional to difference between current pheromone and max
@@ -106,19 +107,24 @@ class AntColonyScheduler:
                     taken,
                     course_conflicts
                 )
-                for hour in event.durationInHours:
+                for hour in range(event.durationInHours):
                     taken.append((d, t + hour, r))
                     course_conflicts.append((event.eventType, d, t + hour))
                 s.add_event_starting_day_time_room(d, t, r)
             index += 1
         return s
 
-    def generate_day_time_room(self, event: Event, available_slots: [[[int]]], pheromones: [[[int]]], already_taken: (int, int, int),
-                               course_conflict: (EventType, int, int)) -> (int, int, int):
+    def generate_day_time_room(self,
+                               event: Event,
+                               available_slots: [[[int]]],
+                               pheromones: [[[int]]],
+                               already_taken: [(int, int, int)],
+                               course_conflict: [(EventType, int, int)]) -> (int, int, int):
         pher = np.copy(pheromones)
         pref = np.copy(available_slots)
         # Do not schedule in any time slot that has already been taken
-        pher[already_taken] = 0
+        for taken in already_taken:
+            pher[taken] = 0
 
         # Do not schedule in any time slot if an event from the same course is already scheduled
         for (_, d, t) in course_conflict:
@@ -141,4 +147,5 @@ class AntColonyScheduler:
             return -1, -1, -1
         prob = prob / np.sum(prob)
         # Choose a time_slot
-        return np.random.choice(self.time_slots, p=prob)
+        index = np.random.choice(self.time_slot_index, p=prob)
+        return self.time_slots[index]

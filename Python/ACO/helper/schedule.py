@@ -1,5 +1,8 @@
 from itertools import groupby
 from math import log2
+
+import numpy as np
+
 from .event import Event
 from .eventType import EventType
 
@@ -38,12 +41,16 @@ class Schedule:
 
     def __init__(self, events_to_schedule: [Event]):
         self.events = events_to_schedule
+        self.starting_day_time_room = []
 
     def __eval_fitness(self):
+        if self.fitness_evaluated:
+            return
         # If all events are scheduled without conflict, set is_valid_schedule to true
         self.fitness = 0
+        self.fitness_evaluated = True
         self.is_valid_schedule = True
-        bonus = 0
+        bonus = 1
 
         index = 0
         courses = [list(ele) for _, ele in groupby(self.events, lambda ele: ele.courseCode)]
@@ -71,16 +78,18 @@ class Schedule:
 
     def __lt__(self, other):
         # If fitness has not been re-evaluated since last change, do so
-        if not self.fitness_evaluated:
-            self.__eval_fitness()
-            self.fitness_evaluated = True
-        return self.fitness > other.fitness
+        self.__eval_fitness()
+        other.__eval_fitness()
+        return self.fitness < other.fitness
 
     def __str__(self):
         representation = "\n"
-        for index, d, t, r in enumerate(self.starting_day_time_room):
+        for index, (d, t, r) in enumerate(self.starting_day_time_room):
             event = self.events[index]
-            representation += f"    {event.courseCode} {event.eventType} {day(d)} Time {9 + t}-{9 + t + event.durationInHours} Room {r} \n"
+            if (d, t, r) == (-1, -1, -1):
+                representation += f"    {event.courseCode} {event.eventType} Not Scheduled (no valid slots available\n"
+            else:
+                representation += f"    {event.courseCode} {event.eventType} {day(d)} Time {9 + t}-{9 + t + event.durationInHours} Room {r} \n"
         return representation
 
     def add_event_starting_day_time_room(self, d, t, r):
@@ -92,9 +101,8 @@ class Schedule:
         Returns all the time slots booked with their corresponding event in the format (event index, day, time, room)
         """
         arr = []
-        for index, (d, t, r) in self.starting_day_time_room:
-            for hour in self.events[index].durartionInHours:
+        for index, (d, t, r) in enumerate(self.starting_day_time_room):
+            for hour in range(self.events[index].durationInHours):
                 arr.append((index, d, t + hour, r))
-            pass
 
         return arr
