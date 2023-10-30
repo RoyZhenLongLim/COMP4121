@@ -54,7 +54,7 @@ class AntColonyScheduler:
 
     def optimize(self) -> Schedule:
         best_schedule = self.generate_schedule()
-        max_iteration = 10
+        max_iteration = 1
         for t in range(max_iteration):
             schedules = self.generate_schedules()
             schedules = sorted(schedules, reverse=True)
@@ -93,7 +93,7 @@ class AntColonyScheduler:
 
     def generate_schedule(self) -> Schedule:
         s = Schedule(self.events)
-        taken = []
+        already_taken = []
         index = 0
         # Group courses by their course code
         courses = [list(ele) for _, ele in groupby(self.events, lambda ele: ele.courseCode)]
@@ -104,14 +104,15 @@ class AntColonyScheduler:
                     event,
                     self.preference[index],
                     self.pheromones[index],
-                    taken,
+                    already_taken,
                     course_conflicts
                 )
+
                 for hour in range(event.durationInHours):
-                    taken.append((d, t + hour, r))
+                    already_taken.append((d, t + hour, r))
                     course_conflicts.append((event.eventType, d, t + hour))
                 s.add_event_starting_day_time_room(d, t, r)
-            index += 1
+                index += 1
         return s
 
     def generate_day_time_room(self,
@@ -140,7 +141,7 @@ class AntColonyScheduler:
         pher = np.reshape(pher, -1)
         pref = np.reshape(pref, -1)
         # Compute probability for each time slot to be chosen
-        prob = pher ** self.alpha * pref ** self.beta
+        prob = (pher ** self.alpha) * (pref ** self.beta)
 
         if np.sum(prob) == 0:
             # If there are no available time slots, return -1 for each

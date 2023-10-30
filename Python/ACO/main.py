@@ -10,13 +10,13 @@ def main():
     # TUT, OTH must be in room 2
     # Note events can't be scheduled at the end of the day (e.g. a 2 hours event can't be scheduled
     config = {
-        "days": 5,
+        "days": 2,
         "timeBlocks": 9,
         "rooms": 7
     }
 
     events = []
-    for i in range(1, 4):
+    for i in range(1, 2):
         events.extend([
             Event(
                 f"PHYS11{i}1",
@@ -51,8 +51,8 @@ def main():
                 [ele for ele in [4, 5, 6]]
             ),
         ])
-    n_ants = 4
-    n_best = 2
+    n_ants = 1
+    n_best = 1
     scheduler = AntColonyScheduler(
         n_ants,
         n_best,
@@ -62,7 +62,9 @@ def main():
         config["rooms"],
     )
 
-    s = scheduler.optimize()
+    print(
+        scheduler.optimize()
+    )
 
 
 if __name__ == "__main__":
