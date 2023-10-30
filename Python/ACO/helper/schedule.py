@@ -1,4 +1,17 @@
+from itertools import groupby
+from math import log2
 from .event import Event
+from .eventType import EventType
+
+
+def earlier(d1, t1, d2, t2) -> bool:
+    """
+    Returns if first event is earlier than second event
+    """
+    if d1 < d2:
+        return True
+    else:
+        return t1 < t2
 
 
 def day(d):
@@ -28,8 +41,33 @@ class Schedule:
 
     def __eval_fitness(self):
         # If all events are scheduled without conflict, set is_valid_schedule to true
-        # TODO FIX THIS
-        self.fitness = 1
+        self.fitness = 0
+        self.is_valid_schedule = True
+        bonus = 0
+
+        index = 0
+        courses = [list(ele) for _, ele in groupby(self.events, lambda ele: ele.courseCode)]
+        for course in courses:
+            earliest_index = index
+            for _ in course:
+                # If any event is not scheduled, set is_valid_schedule to false, otherwise increment fitness
+                if self.starting_day_time_room == (-1, -1, 1):
+                    self.is_valid_schedule = False
+                else:
+                    self.fitness += 1
+
+                (d1, t1, r1) = self.starting_day_time_room[index]
+                (d2, t2, r2) = self.starting_day_time_room[earliest_index]
+
+                if earlier(d1, t1, d2, t2):
+                    earliest_index = index
+
+                index += 1
+
+            if self.events[earliest_index].eventType == EventType.LEC:
+                bonus += 1
+
+        self.fitness += log2(bonus)
 
     def __lt__(self, other):
         # If fitness has not been re-evaluated since last change, do so
