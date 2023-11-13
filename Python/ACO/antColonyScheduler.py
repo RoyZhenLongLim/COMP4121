@@ -65,7 +65,6 @@ class AntColonyScheduler:
 
             # Display the best solution in current generation
             print("Generation {}: Fitness: {}".format(t, best_schedule.fitness), end="\n")
-            # print(best_schedule)
 
             # Pheromone are volatile and evaporate over time,
             self.evaporate_pheromone()
@@ -130,6 +129,7 @@ class AntColonyScheduler:
         # Do not schedule in any time slot if an event from the same course is already scheduled
         for (_, d, t) in course_conflict:
             pher[(d, t)] = 0
+            print(f"Course Conflict: {d, t}")
 
         # Do not schedule multiple lectures on the same day
         if event.eventType == EventType.LEC:

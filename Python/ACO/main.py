@@ -1,3 +1,7 @@
+import random
+
+import numpy as np
+
 from Python.ACO.antColonyScheduler import AntColonyScheduler
 from aco import AntColony
 from helper.event import Event
@@ -11,7 +15,7 @@ def main():
     # Note events can't be scheduled at the end of the day (e.g. a 2 hours event can't be scheduled
     config = {
         "days": 2,
-        "timeBlocks": 9,
+        "timeBlocks": 4,
         "rooms": 7
     }
 
@@ -62,8 +66,10 @@ def main():
         config["rooms"],
     )
 
+    random.seed(0)
+    np.random.seed(0)
     print(
-        scheduler.optimize()
+        scheduler.generate_schedule()
     )
 
 

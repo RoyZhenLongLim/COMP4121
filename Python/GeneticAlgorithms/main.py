@@ -5,6 +5,7 @@ from statistics import mean, stdev
 from helper.config import config
 from helper.eventType import EventType
 from helper.event import Event
+from passwordGuesser import PasswordGuesser
 from geneticScheduler import GeneticScheduler
 
 
@@ -73,7 +74,9 @@ def main():
         ])
 
     s = GeneticScheduler(events)
-    s.solve()
+    # s.solve()
+    g = PasswordGuesser("Hello World")
+    g.guess()
 
 
 if __name__ == "__main__":
