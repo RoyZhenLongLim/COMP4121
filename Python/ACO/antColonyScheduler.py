@@ -91,6 +91,7 @@ class AntColonyScheduler:
         return [self.generate_schedule() for _ in range(self.n_ants)]
 
     def generate_schedule(self) -> Schedule:
+        # ! TODO: THERE IS A BUG WHERE THE OVERLAPPING TIMES ARE SCHEDULED FOR THE SAME COURSE
         s = Schedule(self.events)
         already_taken = []
         index = 0
