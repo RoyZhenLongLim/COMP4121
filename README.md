@@ -9,4 +9,6 @@ geneticSchedule.py
 antColonyScheduler.py
 ```
 
+You can run them using their corrosponding `main.py` files.
+
 
