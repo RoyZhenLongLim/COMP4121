@@ -54,7 +54,7 @@ class AntColonyScheduler:
 
     def optimize(self) -> Schedule:
         best_schedule = self.generate_schedule()
-        max_iteration = 1
+        max_iteration = 5000
         for t in range(max_iteration):
             schedules = self.generate_schedules()
             schedules = sorted(schedules, reverse=True)
@@ -91,7 +91,6 @@ class AntColonyScheduler:
         return [self.generate_schedule() for _ in range(self.n_ants)]
 
     def generate_schedule(self) -> Schedule:
-        # ! TODO: THERE IS A BUG WHERE THE OVERLAPPING TIMES ARE SCHEDULED FOR THE SAME COURSE
         s = Schedule(self.events)
         already_taken = []
         index = 0
@@ -129,8 +128,12 @@ class AntColonyScheduler:
 
         # Do not schedule in any time slot if an event from the same course is already scheduled
         for (_, d, t) in course_conflict:
+            # No events happen at the same time
             pher[(d, t)] = 0
-            print(f"Course Conflict: {d, t}")
+            # Remove any start time that would lead to an overlap between events
+            for T in range(1, event.durationInHours):
+                if t - T >= 0:
+                    pher[(d, t - T)] = 0
 
         # Do not schedule multiple lectures on the same day
         if event.eventType == EventType.LEC:

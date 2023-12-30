@@ -3,7 +3,6 @@ import random
 import numpy as np
 
 from Python.ACO.antColonyScheduler import AntColonyScheduler
-from aco import AntColony
 from helper.event import Event
 from helper.eventType import EventType
 
@@ -20,7 +19,7 @@ def main():
     }
 
     events = []
-    for i in range(1, 2):
+    for i in range(1, 3):
         events.extend([
             Event(
                 f"PHYS11{i}1",
@@ -55,8 +54,8 @@ def main():
                 [ele for ele in [4, 5, 6]]
             ),
         ])
-    n_ants = 1
-    n_best = 1
+    n_ants = 5
+    n_best = 3
     scheduler = AntColonyScheduler(
         n_ants,
         n_best,
@@ -69,7 +68,7 @@ def main():
     random.seed(0)
     np.random.seed(0)
     print(
-        scheduler.generate_schedule()
+        scheduler.optimize()
     )
 
 
